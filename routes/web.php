@@ -54,3 +54,9 @@ Route::middleware('auth')->group(function () {
 
 // Ini adalah file yang berisi rute untuk login, register, logout, dll.
 require __DIR__.'/auth.php';
+
+use Illuminate\Support\Facades\Artisan;
+Route::get('/run-artisan-commands', function () {
+    Artisan::call('migrate --force');
+    return 'MIGRATION COMPLETED!';
+});
