@@ -35,6 +35,14 @@
                                 </div>
                             </div>
 
+                            <div class="mt-4">
+                                <label for="is_featured" class="inline-flex items-center">
+                                    <input id="is_featured" type="checkbox" name="is_featured" value="1" 
+                                        class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-600">Jadikan Menu Unggulan</span>
+                                </label>
+                            </div>                            
+
                             <div>
                                 <label class="block font-medium text-sm text-gray-700">Gambar Menu</label>
                                 <div x-data="{ imageUrl: '' }" class="mt-1">
@@ -59,11 +67,11 @@
                             </div>
                         </div>
 
-                        <div class="flex items-center justify-end mt-6 pt-6 border-t border-gray-200">
-                            <a href="{{ route('dashboard') }}" class="text-sm text-gray-600 hover:text-gray-900 mr-4">Batal</a>
+                        <div class="flex items-center justify-start mt-6 pt-6 border-t border-gray-200">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-orange-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-orange-600">
                                 Simpan Menu
-                            </button>
+                            </button>                            
+                            <a href="{{ route('dashboard') }}" class="text-sm text-gray-600 hover:text-gray-900 ml-4">Batal</a>
                         </div>
                     </form>
 

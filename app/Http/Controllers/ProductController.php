@@ -2,12 +2,38 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use App\Models\Product;
 
 class ProductController extends Controller
 {
+    public function index(Request $request)
+    {
+        // 1. Ambil nilai filter dari URL, defaultnya adalah 'all'
+        $statusFilter = $request->input('status', 'all');
+
+        $query = Product::query();
+
+        // 2. Terapkan kondisi berdasarkan filter
+        if ($statusFilter == 'active') {
+            // 'active' adalah default, jadi tidak perlu query khusus
+        } elseif ($statusFilter == 'deleted') {
+            $query->onlyTrashed(); // Hanya ambil yang di-soft delete
+        } else {
+            $query->withTrashed(); // Ambil semua (aktif dan terhapus)
+        }
+
+        // 3. Ambil data setelah difilter, urutkan, dan paginasi
+        $products = $query->latest()->paginate(10);
+
+        // 4. Kirim data dan status filter ke view
+        return view('products.index', [
+            'products' => $products,
+            'statusFilter' => $statusFilter,
+        ]);
+    }
+
     public function create()
     {
         return view('products.create');
@@ -15,79 +41,63 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
-        // 1. Validasi data input, termasuk file gambar
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric',
-            'image_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi untuk gambar
+            'image_url' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_featured' => 'nullable|boolean', // Validasi untuk checkbox
         ]);
 
-        // 2. Proses upload gambar
         if ($request->hasFile('image_url')) {
-            // Simpan gambar ke storage/app/public/products dan dapatkan path-nya
             $path = $request->file('image_url')->store('products', 'public');
             $validatedData['image_url'] = $path;
         }
+        
+        // Menangani input checkbox
+        $validatedData['is_featured'] = $request->has('is_featured');
 
-        // 3. Simpan data ke database
         Product::create($validatedData);
 
-        // 4. Kembali ke halaman dashboard dengan pesan sukses
-        return redirect()->route('dashboard')->with('success', 'Menu baru berhasil ditambahkan!');
+        return redirect()->route('products.index')->with('success', 'Menu baru berhasil ditambahkan!');
     }
 
     public function edit(Product $product)
     {
-        // Laravel akan otomatis mencari produk berdasarkan ID di URL
         return view('products.edit', ['product' => $product]);
     }
 
-    // Method untuk memproses update data
     public function update(Request $request, Product $product)
     {
-        // 1. Validasi data input
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric',
-            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Gambar bersifat opsional
+            'image_url' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'is_featured' => 'nullable|boolean', // Validasi untuk checkbox
         ]);
 
-        // 2. Cek apakah ada file gambar baru yang di-upload
         if ($request->hasFile('image_url')) {
-            // Hapus gambar lama jika ada (opsional tapi praktik yang baik)
-            // Storage::disk('public')->delete($product->image_url);
-
-            // Simpan gambar baru dan update path-nya
+            // Hapus gambar lama jika ada
+            if ($product->image_url) {
+                Storage::disk('public')->delete($product->image_url);
+            }
+            // Simpan gambar baru
             $path = $request->file('image_url')->store('products', 'public');
             $validatedData['image_url'] = $path;
         }
 
-        // 3. Update data produk di database
+        // Menangani input checkbox
+        $validatedData['is_featured'] = $request->has('is_featured');
+
         $product->update($validatedData);
 
-        // 4. Kembali ke halaman dashboard dengan pesan sukses
-        return redirect()->route('dashboard')->with('success', 'Menu berhasil diperbarui!');
+        return redirect()->route('products.index')->with('success', 'Menu berhasil diperbarui!');
     }
 
     public function destroy(Product $product)
     {
-        // 1. Hapus file gambar dari storage untuk menghemat ruang
-        if ($product->image_url) {
-            Storage::disk('public')->delete($product->image_url);
-        }
-
-        // 2. Hapus data produk dari database
         $product->delete();
-
-        // 3. Kembali ke halaman dashboard dengan pesan sukses
-        return redirect()->route('dashboard')->with('success', 'Menu berhasil dihapus!');
-    }
-
-    public function index()
-    {
-        $products = Product::latest()->paginate(10); // Menggunakan paginasi
-        return view('products.index', ['products' => $products]);
+        return redirect()->route('products.index')->with('success', 'Menu berhasil dihapus!');
     }
 }

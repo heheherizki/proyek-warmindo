@@ -12,7 +12,7 @@
         <div class="flex items-center space-x-4">
             <div class="hidden md:flex space-x-6 items-center">
                 <a href="/#keunggulan" class="text-slate-600 hover:text-orange-500 transition duration-300">Keunggulan</a>
-                <a href="/#menu" class="text-slate-600 hover:text-orange-500 transition duration-300">Menu</a>
+                <a href="/menu" class="text-slate-600 hover:text-orange-500 transition duration-300">Menu</a>
                 <a href="/#lokasi" class="text-slate-600 hover:text-orange-500 transition duration-300">Lokasi</a>
             </div>
 
@@ -50,7 +50,7 @@
 
     <div x-show="open" @click.away="open = false" class="md:hidden bg-white shadow-lg border-t border-gray-200" style="display: none;">
         <a href="/#keunggulan" class="block py-3 px-4 text-base text-slate-600 hover:bg-orange-50 hover:text-orange-500">Keunggulan</a>
-        <a href="/#menu" class="block py-3 px-4 text-base text-slate-600 hover:bg-orange-50 hover:text-orange-500">Menu</a>
+        <a href="/menu" class="block py-3 px-4 text-base text-slate-600 hover:bg-orange-50 hover:text-orange-500">Menu</a>
         <a href="/#lokasi" class="block py-3 px-4 text-base text-slate-600 hover:bg-orange-50 hover:text-orange-500">Lokasi</a>
         <div class="border-t border-gray-100 my-1"></div>
         @guest

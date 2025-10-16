@@ -39,11 +39,19 @@
                                 
                                 <div class="border-t pt-2 mt-2 flex justify-between items-center">
                                     <span class="font-bold">Total: Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
-                                    <form action="{{ route('orders.complete', $order) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <button type="submit" class="text-sm bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600">Selesai</button>
-                                    </form>
+
+                                    <div class="flex space-x-2">
+                                        <form action="{{ route('orders.cancel', $order) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="text-sm bg-gray-500 text-white px-3 py-1 rounded-md hover:bg-gray-600">Batal</button>
+                                        </form>
+                                        <form action="{{ route('orders.complete', $order) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="text-sm bg-green-500 text-white px-3 py-1 rounded-md hover:bg-green-600">Selesai</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         @empty

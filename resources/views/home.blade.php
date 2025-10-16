@@ -68,42 +68,89 @@
                     <p class="text-slate-500">Lapar tengah malam? Kami siap melayani Anda kapan saja, tanpa henti.</p>
                 </div>
                 <div data-aos="fade-up" data-aos-delay="300">
-                    <div class="bg-orange-100 p-6 rounded-full inline-block mb-4"><svg class="w-8 h-8 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.75A.75.75 0 013 4.5h.75m0 0h.75a.75.75 0 01.75.75v.75m0 0h-.75a.75.75 0 01-.75-.75V5.25m0 0v-.75A.75.75 0 013 4.5h.75M3 12h18M3 15h18" /></svg></div>
+                    <div class="bg-orange-100 p-6 rounded-full inline-block mb-4"><svg class="w-8 h-8 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg></div>
                     <h3 class="text-xl font-bold mb-2">Harga Mahasiswa</h3>
                     <p class="text-slate-500">Nikmati aneka hidangan lezat tanpa membuat kantong Anda kering.</p>
                 </div>
                 <div data-aos="fade-up" data-aos-delay="400">
-                    <div class="bg-orange-100 p-6 rounded-full inline-block mb-4"><svg class="w-8 h-8 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5A.75.75 0 0114.25 12h.01a.75.75 0 01.75.75v7.5m4.138-8.506c-.054.04-.107.081-.16.122l-4.13-1.652a.75.75 0 00-.7.017l-4.13 1.65a.75.75 0 00-.363 1.118l1.972 4.93a.75.75 0 001.275.242l2.36-2.36a.75.75 0 011.06 0l2.36 2.36a.75.75 0 001.275-.242l1.972-4.93a.75.75 0 00-.363-1.118l-4.13-1.652a.75.75 0 00-.7-.017z" /></svg></div>
+                    <div class="bg-orange-100 p-6 rounded-full inline-block mb-4"><svg class="w-8 h-8 text-orange-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z" /></svg></div>
                     <h3 class="text-xl font-bold mb-2">Varian Unik</h3>
                     <p class="text-slate-500">Mulai dari Indomie Bangladesh hingga Carbonara, kami punya rasa yang tak terduga.</p>
                 </div>
             </div>
         </div>
     </section>
+
     <section id="menu" class="py-20 bg-cream-100">
         <div class="container mx-auto px-6 text-center">
             <h2 data-aos="fade-up" class="text-3xl font-bold mb-2">Menu Andalan Kami</h2>
             <p data-aos="fade-up" data-aos-delay="100" class="text-slate-500 mb-12">Beberapa pilihan favorit pelanggan setia kami.</p>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                
-                @foreach ($featuredProducts as $product)
-                <div data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 + 100 }}" class="bg-white rounded-lg shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300">
-                    
-                    {{-- Gunakan path dari database, pastikan data di database benar --}}
-                    <img src="{{ asset('storage/' . $product->image_url) }}" class="w-full h-48 object-cover">
-                    
-                    <div class="p-6 text-left">
-                        <h3 class="font-bold text-lg mb-2">{{ $product->name }}</h3>
-                        <p class="text-slate-500 text-sm mb-4">{{ $product->description }}</p>
-                        <span class="font-bold text-orange-500 text-lg">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
-                    </div>
-                </div>
-                @endforeach
 
+            <div 
+                x-data="{
+                    scroller: null,
+                    animationFrameId: null,
+                    speed: 0.5, // Atur kecepatan di sini (misal: 0.5 untuk pelan, 1 untuk lebih cepat)
+
+                    init() {
+                        this.scroller = this.$refs.scroller;
+                        this.startScrolling();
+                    },
+
+                    animateScroll() {
+                        this.scroller.scrollLeft += this.speed;
+                        if (this.scroller.scrollLeft >= this.scroller.scrollWidth / 2) {
+                            this.scroller.scrollLeft = 0;
+                        }
+                        this.animationFrameId = requestAnimationFrame(this.animateScroll.bind(this));
+                    },
+
+                    startScrolling() {
+                        // Hentikan dulu jika sedang berjalan, untuk mencegah duplikasi
+                        cancelAnimationFrame(this.animationFrameId);
+                        // Mulai loop animasi baru
+                        this.animationFrameId = requestAnimationFrame(this.animateScroll.bind(this));
+                    },
+
+                    stopScrolling() {
+                        cancelAnimationFrame(this.animationFrameId);
+                    }
+                }"
+                class="relative w-full overflow-hidden"
+                @mouseover="stopScrolling()"
+                @mouseleave="startScrolling()"
+            >
+                <div x-ref="scroller" class="flex overflow-x-auto scrollbar-hide">
+                    @foreach ($featuredProducts as $product)
+                        <div class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/4 p-4">
+                            <div class="bg-white rounded-lg shadow-lg overflow-hidden h-full">
+                                <img src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
+                                <div class="p-6 text-left">
+                                    <h3 class="font-bold text-lg mb-2">{{ $product->name }}</h3>
+                                    <p class="text-slate-500 text-sm mb-4">{{ Str::limit($product->description, 50) }}</p>
+                                    <span class="font-bold text-orange-500 text-lg">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+
+                    @foreach ($featuredProducts as $product)
+                        <div class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/4 p-4">
+                            <div class="bg-white rounded-lg shadow-lg overflow-hidden h-full">
+                                <img src="{{ asset('storage/' . $product->image_url) }}" alt="{{ $product->name }}" class="w-full h-48 object-cover">
+                                <div class="p-6 text-left">
+                                    <h3 class="font-bold text-lg mb-2">{{ $product->name }}</h3>
+                                    <p class="text-slate-500 text-sm mb-4">{{ Str::limit($product->description, 50) }}</p>
+                                    <span class="font-bold text-orange-500 text-lg">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
     </section>
+
     <section id="lokasi" class="py-20 bg-white">
         <div class="container mx-auto px-6 text-center">
             <h2 data-aos="fade-up" class="text-3xl font-bold mb-2">Temukan Kami</h2>

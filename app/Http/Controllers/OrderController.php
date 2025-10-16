@@ -20,26 +20,49 @@ class OrderController extends Controller
 
     public function reports(Request $request)
     {
-        // Tentukan tanggal awal dan akhir, dengan menambahkan startOfDay() dan endOfDay()
+        // Ambil input dari filter, atau gunakan nilai default
         $startDate = $request->input('start_date') ? Carbon::parse($request->input('start_date'))->startOfDay() : Carbon::now()->startOfMonth();
         $endDate = $request->input('end_date') ? Carbon::parse($request->input('end_date'))->endOfDay() : Carbon::now()->endOfDay();
+        $statusFilter = $request->input('status', 'semua'); // Defaultnya 'semua'
 
-        // Buat query dasar untuk pesanan yang selesai
-        $query = Order::where('status', 'selesai')
-                    ->whereBetween('updated_at', [$startDate, $endDate]);
+        // Query untuk MENGHITUNG PENDAPATAN (selalu hanya yang statusnya 'selesai')
+        $salesQuery = Order::where('status', 'selesai')
+                        ->whereBetween('updated_at', [$startDate, $endDate]);
 
-        // Hitung total pendapatan berdasarkan query yang sudah difilter
-        $totalSales = $query->sum('total_amount');
+        $totalSales = $salesQuery->sum('total_amount');
+        $completedOrderCount = $salesQuery->count();
         
-        // Ambil daftar pesanan berdasarkan query yang sudah difilter, lalu paginasi
-        // Kita perlu membuat klon dari query agar tidak terpengaruh oleh sum()
-        $completedOrders = $query->clone()->latest()->paginate(15);
+        // Query untuk MENAMPILKAN RIWAYAT (bisa difilter)
+        $historyQuery = Order::whereBetween('updated_at', [$startDate, $endDate]);
+
+        if ($statusFilter && $statusFilter !== 'semua') {
+            // Jika status spesifik dipilih, filter berdasarkan status itu
+            $historyQuery->where('status', $statusFilter);
+        } else {
+            // Jika 'semua' atau tidak ada filter, tampilkan yang selesai dan dibatalkan
+            $historyQuery->whereIn('status', ['selesai', 'dibatalkan']);
+        }
+
+        $historicalOrders = $historyQuery->latest('updated_at')->paginate(15);
 
         return view('reports', [
             'totalSales' => $totalSales,
-            'completedOrders' => $completedOrders,
+            'historicalOrders' => $historicalOrders,
+            'completedOrderCount' => $completedOrderCount,
             'startDate' => $startDate,
             'endDate' => $endDate,
+            'statusFilter' => $statusFilter, // Kirim status filter ke view
         ]);
+    }    
+
+    public function cancel(Order $order)
+    {
+        // Hanya izinkan pembatalan jika statusnya 'baru'
+        if ($order->status == 'baru') {
+            $order->status = 'dibatalkan';
+            $order->save();
+            return redirect()->route('dashboard')->with('success', 'Pesanan #' . $order->id . ' berhasil dibatalkan.');
+        }
+        return redirect()->route('dashboard')->with('error', 'Pesanan ini tidak bisa dibatalkan.');
     }
 }

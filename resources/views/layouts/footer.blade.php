@@ -9,7 +9,7 @@
                 <h3 class="font-bold text-lg mb-4">Navigasi</h3>
                 <ul>
                     <li class="mb-2"><a href="/#keunggulan" class="hover:text-orange-400">Keunggulan</a></li>
-                    <li class="mb-2"><a href="/#menu" class="hover:text-orange-400">Menu</a></li>
+                    <li class="mb-2"><a href="/menu" class="hover:text-orange-400">Menu</a></li>
                     <li class="mb-2"><a href="/#lokasi" class="hover:text-orange-400">Lokasi</a></li>
                 </ul>
             </div>

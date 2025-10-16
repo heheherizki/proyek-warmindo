@@ -9,7 +9,7 @@ class HomeController extends Controller
 {
     public function index()
         {
-            $featuredProducts = Product::find([1, 2, 3, 4]);
+            $featuredProducts = Product::where('is_featured', true)->latest()->get();
             
             return view('home', ['featuredProducts' => $featuredProducts]);
         }

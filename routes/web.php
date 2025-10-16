@@ -35,7 +35,6 @@ Route::get('/cart/clear', function () {
 })->name('cart.clear');
 
 
-
 // == RUTE YANG MEMERLUKAN LOGIN (DIBUAT OLEH BREEZE & KITA) ==
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
@@ -49,14 +48,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::patch('/products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
-    Route::get('/dashboard/menu', [ProductController::class, 'index'])->name('products.index');    
+    Route::get('/dashboard/menu', [ProductController::class, 'index'])->name('products.index');  
+    Route::patch('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');  
 });
 
 // Ini adalah file yang berisi rute untuk login, register, logout, dll.
 require __DIR__.'/auth.php';
-
-use Illuminate\Support\Facades\Artisan;
-Route::get('/run-artisan-commands', function () {
-    Artisan::call('migrate --force');
-    return 'MIGRATION COMPLETED!';
-});
