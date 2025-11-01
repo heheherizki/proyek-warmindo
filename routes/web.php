@@ -50,6 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('/dashboard/menu', [ProductController::class, 'index'])->name('products.index');  
     Route::patch('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');  
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
+    Route::get('/dashboard/reports/download', [OrderController::class, 'downloadPDF'])->name('orders.downloadPDF');
 });
 
 // Ini adalah file yang berisi rute untuk login, register, logout, dll.

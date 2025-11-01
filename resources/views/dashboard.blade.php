@@ -41,6 +41,9 @@
                                     <span class="font-bold">Total: Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
 
                                     <div class="flex space-x-2">
+                                        <a href="{{ route('orders.invoice', $order) }}" target="_blank" class="text-sm bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600">
+                                            Cetak
+                                        </a>
                                         <form action="{{ route('orders.cancel', $order) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
@@ -53,6 +56,8 @@
                                         </form>
                                     </div>
                                 </div>
+
+                                
                             </div>
                         @empty
                             <p class="text-gray-500 col-span-full">Tidak ada pesanan baru saat ini.</p>
