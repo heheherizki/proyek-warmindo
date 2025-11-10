@@ -28,6 +28,9 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.s
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 Route::patch('/orders/{order}/complete', [OrderController::class, 'complete'])->name('orders.complete');
 Route::get('/dashboard/reports', [OrderController::class, 'reports'])->name('orders.reports');
+Route::post('/webhook/payment', [CheckoutController::class, 'handleWebhook'])->name('checkout.webhook');
+Route::get('/pesanan/{order}/tunggu', [CheckoutController::class, 'waiting'])->name('checkout.waiting');
+Route::get('/checkout/status/{order}', [CheckoutController::class, 'checkStatus'])->name('checkout.status');
 
 Route::get('/cart/clear', function () {
     session()->forget('cart');
@@ -52,6 +55,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');  
     Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice'])->name('orders.invoice');
     Route::get('/dashboard/reports/download', [OrderController::class, 'downloadPDF'])->name('orders.downloadPDF');
+    Route::patch('/products/{product}/toggle', [ProductController::class, 'toggleAvailability'])->name('products.toggle');
 });
 
 // Ini adalah file yang berisi rute untuk login, register, logout, dll.

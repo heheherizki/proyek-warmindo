@@ -100,4 +100,14 @@ class ProductController extends Controller
         $product->delete();
         return redirect()->route('products.index')->with('success', 'Menu berhasil dihapus!');
     }
+
+    public function toggleAvailability(Product $product)
+    {
+        // Ubah nilai boolean (jika true -> false, jika false -> true)
+        $product->is_available = !$product->is_available;
+        $product->save();
+
+        $status = $product->is_available ? 'Tersedia' : 'Habis';
+        return redirect()->route('products.index')->with('success', "Status '{$product->name}' diubah menjadi {$status}!");
+    }
 }
