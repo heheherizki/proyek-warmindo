@@ -6,10 +6,14 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str; // <-- PERBAIKAN DI SINI
+use Illuminate\Support\Str;
+use App\Events\NewOrderReceived; // <-- 1. Pastikan Event di-import
 
 class CheckoutController extends Controller
 {
+    /**
+     * Menampilkan halaman checkout.
+     */
     public function index()
     {
         $cart = session()->get('cart', []);
@@ -23,6 +27,9 @@ class CheckoutController extends Controller
         return view('checkout', ['cart' => $cart, 'total' => $total]);
     }
 
+    /**
+     * Memproses dan menyimpan pesanan.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -31,13 +38,15 @@ class CheckoutController extends Controller
         ]);
 
         $cart = session()->get('cart', []);
+        if (empty($cart)) {
+            return redirect()->to('/menu');
+        }
+
         $total = 0;
         foreach ($cart as $id => $details) {
             $total += $details['price'] * $details['quantity'];
         }
 
-        // Kita perlu kolom baru untuk menyimpan QR string
-        // Mari kita gunakan ulang qr_code_url (karena tipenya TEXT)
         $order = Order::create([
             'customer_name'  => $request->customer_name,
             'total_amount'   => $total,
@@ -58,18 +67,20 @@ class CheckoutController extends Controller
         if ($request->payment_method === 'cash') {
             $order->update(['status' => 'baru', 'payment_status' => 'paid']);
             session()->forget('cart');
+
+            // 2. KIRIM EVENT UNTUK PESANAN CASH
+            $order->load('items.product'); // Muat relasi sebelum dikirim
+            NewOrderReceived::dispatch($order);
+
             return redirect()->route('checkout.success', $order->id);
         
         } elseif ($request->payment_method === 'qris') {
-            
-            // --- LOGIKA BARU API PAKASIR ---
             try {
                 $slug = config('services.pakasir.slug');
                 $apiKey = config('services.pakasir.api_key');
                 $orderId = 'WARM-' . $order->id . '-' . Str::random(4);
                 $amount = (int)$order->total_amount;
 
-                // 1. Kirim permintaan API ke Pakasir
                 $response = Http::post('https://app.pakasir.com/api/transactioncreate/qris', [
                     'project' => $slug,
                     'order_id' => $orderId,
@@ -78,22 +89,15 @@ class CheckoutController extends Controller
                 ]);
 
                 if ($response->failed()) {
-                    // Jika API-key salah atau server Pakasir down
                     return redirect()->back()->with('error', 'Gagal terhubung ke gateway pembayaran.');
                 }
 
                 $paymentData = $response->json()['payment'];
-                
-                // 2. Ambil QR String dari respons
                 $qrString = $paymentData['payment_number'];
-
-                // 3. Simpan QR String ke database untuk ditampilkan nanti
                 $order->qr_code_url = $qrString;
                 $order->save();
 
                 session()->forget('cart');
-                
-                // 4. Arahkan ke halaman "Tunggu Pembayaran" yang BARU
                 return redirect()->route('checkout.waiting', $order->id);
 
             } catch (\Exception $e) {
@@ -105,17 +109,19 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Halaman baru untuk menampilkan QR Code
+     * Halaman untuk menampilkan QR Code.
      */
     public function waiting(Order $order)
     {
-        // Periksa apakah order memiliki QR string
         if (empty($order->qr_code_url)) {
             return redirect('/cart')->with('error', 'Pesanan tidak valid untuk pembayaran QRIS.');
         }
         return view('checkout-waiting', ['order' => $order]);
     }
 
+    /**
+     * Halaman konfirmasi sukses.
+     */
     public function success(Order $order)
     {
         $order->load('items.product');
@@ -123,49 +129,45 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Menerima Webhook dari Pakasir (Otomatis Ubah Status)
+     * Menerima Webhook dari Pakasir (Otomatis Ubah Status).
      */
     public function handleWebhook(Request $request)
     {
         $data = $request->all();
         
-        // Cek apakah data order_id ada
         if (empty($data['order_id'])) {
             return response()->json(['status' => 'error', 'message' => 'Order ID tidak ada'], 400);
         }
 
-        // Ambil ID pesanan kita
-        $orderId = explode('-', $data['order_id'])[1] ?? null;
-        if (!$orderId) {
-            // Jika formatnya bukan WARM-XX-XXXX
-            $orderId = $data['order_id'];
-        }
-
+        $orderId = explode('-', $data['order_id'])[1] ?? $data['order_id'];
         $order = Order::find($orderId);
 
-        // Jika pesanan ditemukan dan statusnya "completed"
-        if ($order && $data['status'] == 'completed') {
+        if ($order && $data['status'] == 'completed' && $order->payment_status == 'pending') {
             
-            // Verifikasi jumlah
-            if ($order->total_amount == $data['amount']) {
+            if ((int)$order->total_amount == (int)$data['amount']) {
                 
-                // UPDATE STATUS PESANAN
                 $order->update([
-                    'status' => 'baru', // Sekarang pesanan akan muncul di dashboard
+                    'status' => 'baru',
                     'payment_status' => 'paid',
                 ]);
+
+                // 3. KIRIM EVENT UNTUK PESANAN QRIS
+                $order->load('items.product'); // Muat relasi sebelum dikirim
+                NewOrderReceived::dispatch($order);
 
                 return response()->json(['status' => 'success'], 200);
             }
         }
         return response()->json(['status' => 'error', 'message' => 'Invalid request'], 400);
     }
-
+    
+    /**
+     * Dipanggil oleh JavaScript (polling) untuk mengecek status pembayaran.
+     */
     public function checkStatus(Order $order)
     {
-        // Cukup periksa status pembayaran dan kirim kembali sebagai JSON
         return response()->json([
-            'status' => $order->payment_status // Akan mengirim 'pending' atau 'paid'
+            'status' => $order->payment_status
         ]);
     }
 }
